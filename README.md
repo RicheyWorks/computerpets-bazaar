@@ -1,30 +1,37 @@
 # Bazaar
 
-**NFT Marketplace** — Web portal for trading pets, traits, and in-game items under the ComputerPets canon.
+**A species-aware storefront for pets, traits, and items.**
 
-Part of [ComputerPets](https://github.com/RicheyWorks/computerpets). Map: [computerpets-ecosystem](https://github.com/RicheyWorks/computerpets-ecosystem).
+A planned marketplace that verifies ownership and routes trades through the ComputerPets minting and ledger services.
 
-| | |
+**Stage: design scaffold.** This checkout contains a design document and a source placeholder. The experience below is planned; there is no runnable app or integrated service yet.
+
+[Status](#status) · [Planned experience](#planned-experience) · [Contributor quickstart](#contributor-quickstart) · [Service contract](docs/CONTRACT.md) · [Ecosystem map](https://github.com/RicheyWorks/computerpets-ecosystem)
+
+## Status
+
+| Available today | What you can inspect |
 | --- | --- |
-| Status | Design scaffold — contract frozen, implementation next |
-| License | MIT |
-| First pet | Still [Rui on the desktop](https://github.com/RicheyWorks/computerpets/blob/main/docs/START-HERE.md). This organ is optional. |
+| [Service contract](docs/CONTRACT.md) | Intended behavior, boundaries, and planned dependencies. |
+| [Source placeholder](src/bazaar/index.ts) | Name metadata only; no package.json, app, or runtime is checked in. |
+| [MIT license](LICENSE) | Licensing terms for the repository. |
 
-## The job
+Gameplay, endpoints, integration arrows, and failure handling on this page describe implementation targets. No build/test harness, CI workflow, or product screenshots are included in this scaffold.
 
-Flagship already verifies Ethereum NFT ownership. Bazaar is the storefront: listings, royalties, and trait swaps — never a random OpenSea skin dump.
+## Planned experience
 
-The flagship overlay already puts a living sticker on the real desktop (Rui first, 210 kinds). Bazaar does not replace that. It is one organ.
+- GET /v1/listings?species=&slot= — active asks
+- POST /v1/listings — signed ask from a verified owner
+- POST /v1/fill — escrow + transfer via Minter
+- GET /v1/royalties/{collection} — creator cuts
 
-## Who uses it
+### Planned technology
 
-Owners who want to trade traits and items. Steam-only pets cannot list on-chain.
+TypeScript · React 19 · Vite · wagmi / viem · Spring + web3j listings API · IPFS metadata
 
-## What it is not
+### Planned connections
 
-Not OpenSea with our logo. Listings go through Minter. No stolen art dumps.
-
-## Architecture
+These arrows show intended dependencies, rather than working integrations.
 
 ```mermaid
 flowchart LR
@@ -34,82 +41,47 @@ flowchart LR
   atelier -->|thumb| bazaar
 ```
 
-## Stack
+## Contributor quickstart
 
-TypeScript · React 19 · Vite · wagmi / viem · Spring + web3j listings API · IPFS metadata
+With access to this private repository, Git and PowerShell are enough to review the scaffold:
 
-GroupId / namespace: `com.enterprisepet.bazaar`  
-Default listen: `8080`
+```powershell
+git clone https://github.com/RicheyWorks/computerpets-bazaar.git
+Set-Location computerpets-bazaar
+Get-Content docs/CONTRACT.md
+Get-Content src/bazaar/index.ts
+```
 
-## Contract
+Read [Service contract](docs/CONTRACT.md) before choosing implementation details. The commands above inspect the checked-in files; app installation, editor launch, and server startup become possible after a buildable project and entry point are added.
 
-### Data
-
-`Listing(id, tokenId, priceWei, seller) · Fill(txHash, buyer) · RoyaltySplit(bps, address)`
-
-### Surface
-
-- GET /v1/listings?species=&slot= — active asks
-- POST /v1/listings — signed ask from a verified owner
-- POST /v1/fill — escrow + transfer via Minter
-- GET /v1/royalties/{collection} — creator cuts
-
-### Failure doctrine
-
-Chain reorg → listing frozen until confirmations. Unverified Steam-only pet → cannot list on-chain. Wallet reject → no partial debit.
-
-## First slice
-
-Build this and stop. Do not boil the ocean.
+### First implementation target
 
 **Read-only listing grid filtered by species + one signed ask flow against a test NFT.**
 
 You know it works when: Unverified pet cannot list. Wallet reject: no ledger debit. Reorg: listing frozen until confirms.
 
-## Environment
+Treat this as an acceptance target for a future implementation. Start with the documented slice, add the required project setup and focused tests, and update these instructions with commands that work from a fresh clone.
 
-`VITE_CHAIN_ID`, `VITE_MINTER_URL`, `VITE_WALLETCONNECT_ID`
+## Design boundaries
 
-Never commit secrets. Never put Steam or chain keys in the overlay.
+- Stay canon with 210 species. No illegal hybrids. No swapped voices.
+- Treat the desktop overlay as the main quest. This organ is optional until wired.
+- Fail soft: the overlay keeps walking if this service is down, unless this *is* the overlay.
+- No PII in public artifacts (Steam id, wallet, home path, webcam frames).
 
-## Neighbors
+**Required failure behavior:**
 
-- computerpets-minter
-- computerpets-ledger
-- computerpets-atelier
-- computerpets Spring NFT verifier
+Chain reorg → listing frozen until confirmations. Unverified Steam-only pet → cannot list on-chain. Wallet reject → no partial debit.
 
-## Layout
+## Ecosystem
 
-```
-computerpets-bazaar/
-  README.md           this file
-  LICENSE             MIT
-  docs/CONTRACT.md    the same contract, frozen for implementers
-  src/                implementation lands here
-```
+- [computerpets-minter](https://github.com/RicheyWorks/computerpets-minter)
+- [computerpets-ledger](https://github.com/RicheyWorks/computerpets-ledger)
+- [computerpets-atelier](https://github.com/RicheyWorks/computerpets-atelier)
+- [computerpets](https://github.com/RicheyWorks/computerpets) Spring NFT verifier
 
-## Run (Windows)
-
-PowerShell, from this folder, after the flagship helpers (Git, Node LTS 22+, JDK 21 as needed):
-
-```powershell
-cd app; npm install; npm run dev
-```
-
-You do not need this service to meet Rui. The [flagship start-here](https://github.com/RicheyWorks/computerpets/blob/main/docs/START-HERE.md) is still the first pet.
-
-## Links
-
-- Flagship: [RicheyWorks/computerpets](https://github.com/RicheyWorks/computerpets)
-- This repo: [RicheyWorks/computerpets-bazaar](https://github.com/RicheyWorks/computerpets-bazaar)
-- Map: [RicheyWorks/computerpets-ecosystem](https://github.com/RicheyWorks/computerpets-ecosystem)
-- Contract file: [docs/CONTRACT.md](docs/CONTRACT.md)
+Start with the [ComputerPets flagship](https://github.com/RicheyWorks/computerpets) for the desktop pet. This repository describes an optional extension; the [ecosystem map](https://github.com/RicheyWorks/computerpets-ecosystem) explains the broader plan.
 
 ## License
 
 MIT. See [LICENSE](LICENSE).
-
----
-
-*Two hundred ten living kinds. Keep them so a line does not go quiet.*
